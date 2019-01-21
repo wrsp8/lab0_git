@@ -3,14 +3,15 @@ import sys
 import zipfile
 import requests
 
+
 TITLE = '''   ___       __                        __
   / _ |__ __/ /____  ___ ________ ____/ /__ ____
  / __ / // / __/ _ \/ _ `/ __/ _ `/ _  / -_) __/
 /_/ |_\_,_/\__/\___/\_, /_/  \_,_/\_,_/\__/_/
                    /___/
 
-              Machine Structures
-     Great Ideas in Computer Architecture'''
+               Machine Structures
+      Great Ideas in Computer Architecture'''
 
 
 # repo name
@@ -100,9 +101,8 @@ def submit(token):
             else:
                 print(json['msg'])
         else:
-            code = r.status_code
-            msg = ' '.join(requests.status_codes._codes[code][0].split('_')).title()
-            print('server return status code: %d (%s)' % (code, msg))
+            msg = ' '.join(requests.status_codes._codes[500][0].split('_')).title()
+            print('server return status code: %d (%s)' % (r.status_code, msg))
     except requests.exceptions.ConnectionError:
         print('connection to the server could not be established, try again...')
     except requests.exceptions.Timeout:
