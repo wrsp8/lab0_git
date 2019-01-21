@@ -7,7 +7,10 @@ TITLE = '''   ___       __                        __
   / _ |__ __/ /____  ___ ________ ____/ /__ ____
  / __ / // / __/ _ \/ _ `/ __/ _ `/ _  / -_) __/
 /_/ |_\_,_/\__/\___/\_, /_/  \_,_/\_,_/\__/_/
-                   /___/'''
+                   /___/
+
+              Machine Structures
+     Great Ideas in Computer Architecture'''
 
 
 # repo name
@@ -34,14 +37,14 @@ def zip_lab(token):
             zip.write(f)
         zip.close()
         return filename
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         zip.close()
         print('')
         print('incomplete files, expected files: %s' % (','.join(get_files())))
         if os.path.exists(filename):
             os.remove(filename)
         sys.exit(1)
-    except Exception as e:
+    except Exception:
         print('')
         print('an unexpected exception occurs while zipping lab files')
         if os.path.exists(filename):
@@ -54,7 +57,7 @@ def get_server():
     print('getting server url...')
     # debug ?
     if DEBUG:
-        return 'http://localhost:5000/grade'
+        return 'http://localhost:5000'
     # get from github
     link = "https://raw.githubusercontent.com/cc-3/MachineStructures/master/URL"
     try:
@@ -67,7 +70,7 @@ def get_server():
         print('')
         print('request time exceed while getting server url, try again later...')
         sys.exit(1)
-    except Exception as e:
+    except Exception:
         print('')
         print('an unexpected exception occurs while getting server url, try again...')
         sys.exit(1)
@@ -88,13 +91,18 @@ def submit(token):
         f = open(filename, 'rb')
         r = requests.post(url, files={'file': f}, data=info)
         f.close()
-        json = r.json()
-        if json['status'] == 'ok':
-            print(json['msg'])
-            print('')
-            print('=> Score %.2f/100' % json['grade'])
+        if r.status_code == 200:
+            json = r.json()
+            if json['status'] == 'ok':
+                print(json['msg'])
+                print('')
+                print('=> Score %.2f/100' % json['grade'])
+            else:
+                print(json['msg'])
         else:
-            print(json['msg'])
+            code = r.status_code
+            msg = ' '.join(requests.status_codes._codes[code][0].split('_')).title()
+            print('server return status code: %d (%s)' % (code, msg))
     except requests.exceptions.ConnectionError:
         print('connection to the server could not be established, try again...')
     except requests.exceptions.Timeout:
